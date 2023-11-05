@@ -339,11 +339,11 @@ void WriteCommands()
 {
     Console.WriteLine("path");
     Console.WriteLine("\tReturns path to the file with data\n");
-    Console.WriteLine("list [filter = position] [order = asc/desc]");
+    Console.WriteLine("list [filter = Position/Number/DateOfBirth/Sex/Nationality/Experience] [order = Asc/Desc] [additional = Sex(Male/Female)/Nationality(Poland/Germany/...)/Experience(Amateur/Professional)]");
     Console.WriteLine("\tReturns list of cyclists\n");
-    Console.WriteLine("add [number] [firstName] [lastName] [dateOfBirth] [sex] [nationality] [experience]");
+    Console.WriteLine("add [number] [firstName] [lastName] [dateOfBirth] [sex = Male/Female] [nationality = Poland/Germany/...] [experience = Amateur/Professional]");
     Console.WriteLine("\tAdds new cyclist to the list\n");
-    Console.WriteLine("update [number] [firstName] [lastName] [dateOfBirth] [sex] [nationality] [experience]");
+    Console.WriteLine("update [number] [firstName] [lastName] [dateOfBirth] [sex = Male/Female] [nationality = Poland/Germany/...] [experience = Amateur/Professional]");
     Console.WriteLine("\tUpdates cyclist on the list\n");
     Console.WriteLine("remove [number]");
     Console.WriteLine("\tRemoves cyclist from the list\n");
