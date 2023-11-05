@@ -1,4 +1,5 @@
-﻿using System.Security;
+﻿using System.Collections.Immutable;
+using System.Security;
 using System.Text;
 using System.Text.Json;
 using TourDePologne;
@@ -31,9 +32,194 @@ switch (args[0])
     case "list":
         try
         {
-            var race = GetRace();
+            Filter filter;
+            OrderBy order;
 
-            Console.Write(race.ToString());
+            if (args.Length >= 2)
+            {
+                try
+                {
+                    filter = Enum.Parse<Filter>(args[1]);
+                }
+                catch
+                {
+                    Console.WriteLine("Invalid filter, using default filter: Position");
+
+                    filter = Filter.Position;
+                }
+            }
+            else
+            {
+                filter = Filter.Position;
+            }
+
+            if (args.Length >= 3)
+            {
+                try
+                {
+                    order = Enum.Parse<OrderBy>(args[2]);
+                }
+                catch
+                {
+                    Console.WriteLine("Invalid order, using default order: Asc");
+
+                    order = OrderBy.Asc;
+                }
+            }
+            else
+            {
+                order = OrderBy.Asc;
+            }
+
+            var race = GetRace();
+            var cyclists = race.Cyclists;
+
+            switch (filter)
+            {
+                case Filter.Position:
+                    if (order == OrderBy.Desc)
+                    {
+                        cyclists = cyclists.Reverse().ToImmutableList();
+                    }
+
+                    Console.WriteLine(FormatCyclists(cyclists));
+
+                    return;
+
+                case Filter.Number:
+                    if (order == OrderBy.Desc)
+                    {
+                        cyclists = cyclists.OrderByDescending(c => c.Number).ToImmutableList();
+                    }
+                    else
+                    {
+                        cyclists = cyclists.OrderBy(c => c.Number).ToImmutableList();
+                    }
+
+                    Console.WriteLine(FormatCyclists(cyclists));
+
+                    return;
+
+                case Filter.DateOfBirth:
+                    if (order == OrderBy.Desc)
+                    {
+                        cyclists = cyclists.OrderByDescending(c => c.DateOfBirth).ToImmutableList();
+                    }
+                    else
+                    {
+                        cyclists = cyclists.OrderBy(c => c.DateOfBirth).ToImmutableList();
+                    }
+
+                    Console.WriteLine(FormatCyclists(cyclists));
+
+                    return;
+
+                case Filter.Sex:
+                    Sex sex;
+
+                    if (args.Length >= 4)
+                    {
+                        try
+                        {
+                            sex = Enum.Parse<Sex>(args[3]);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Inavlid sex, using default: Male");
+
+                            sex = Sex.Male;
+                        }
+                    }
+                    else
+                    {
+                        sex = Sex.Male;
+                    }
+
+                    if (order == OrderBy.Desc)
+                    {
+                        cyclists = cyclists.Where(c => c.Sex == sex).OrderByDescending(c => c.Number).ToImmutableList();
+                    }
+                    else
+                    {
+                        cyclists = cyclists.Where(c => c.Sex == sex).OrderBy(c => c.Number).ToImmutableList();
+                    }
+
+                    Console.WriteLine(FormatCyclists(cyclists));
+
+                    return;
+
+                case Filter.Nationality:
+                    Nationality nationality;
+
+                    if (args.Length >= 4)
+                    {
+                        try
+                        {
+                            nationality = Enum.Parse<Nationality>(args[3]);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Invalid nationality, using default: Poland");
+
+                            nationality = Nationality.Poland;
+                        }
+                    }
+                    else
+                    {
+                        nationality = Nationality.Poland;
+                    }
+
+                    if (order == OrderBy.Desc)
+                    {
+                        cyclists = cyclists.Where(c => c.Nationality == nationality).OrderByDescending(c => c.Number).ToImmutableList();
+                    }
+                    else
+                    {
+                        cyclists = cyclists.Where(c => c.Nationality == nationality).OrderBy(c => c.Number).ToImmutableList();
+                    }
+
+                    Console.WriteLine(FormatCyclists(cyclists));
+
+                    return;
+
+                case Filter.Experience:
+                    Experience experience;
+
+                    if (args.Length >= 4)
+                    {
+                        try
+                        {
+                            experience = Enum.Parse<Experience>(args[3]);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Invalid experience, using default: Amateur");
+
+                            experience = Experience.Amateur;
+                        }
+                    }
+                    else
+                    {
+                        experience = Experience.Amateur;
+                    }
+
+                    if (order == OrderBy.Desc)
+                    {
+                        cyclists = cyclists.Where(c => c.Experience == experience).OrderByDescending(c => c.Number).ToImmutableList();
+                    }
+                    else
+                    {
+                        cyclists = cyclists.Where(c => c.Experience == experience).OrderBy(c => c.Number).ToImmutableList();
+                    }
+
+                    Console.WriteLine(FormatCyclists(cyclists));
+
+                    return;
+
+                default:
+                    Console.Write(race.ToString());
+                    return;
+            }
         }
         catch (Exception e)
         {
@@ -153,7 +339,7 @@ void WriteCommands()
 {
     Console.WriteLine("path");
     Console.WriteLine("\tReturns path to the file with data\n");
-    Console.WriteLine("list");
+    Console.WriteLine("list [filter = position] [order = asc/desc]");
     Console.WriteLine("\tReturns list of cyclists\n");
     Console.WriteLine("add [number] [firstName] [lastName] [dateOfBirth] [sex] [nationality] [experience]");
     Console.WriteLine("\tAdds new cyclist to the list\n");
@@ -229,4 +415,9 @@ void SaveRace(Race race)
     {
         Console.WriteLine("There was an error while saving data");
     }
+}
+
+string FormatCyclists(ImmutableList<Cyclist> cyclists)
+{
+    return string.Join("\n", cyclists.Select(c => c.ToString()));
 }

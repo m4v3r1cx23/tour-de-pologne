@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 
 namespace TourDePologne
@@ -6,7 +7,7 @@ namespace TourDePologne
     {
         private List<Cyclist> _cyclists;
 
-        public ReadOnlyCollection<Cyclist> Cyclists => _cyclists.AsReadOnly();
+        public ImmutableList<Cyclist> Cyclists => _cyclists.ToImmutableList();
 
         public Race(List<Cyclist> cyclists)
         {
